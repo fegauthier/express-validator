@@ -11,6 +11,9 @@ module.exports = (fields, locations, message) => {
 
   const middleware = (req, res, next) => {
     return runner(req, middleware._context).then(errors => {
+      if(req._validationErrors && req._validationErrors.length > 0 && req._validationContexts && req._validationContexts.length > 0 && req._validationContexts[req._validationContexts.length - 1].blocking){
+        return next();
+      }
       req._validationContexts = (req._validationContexts || []).concat(middleware._context);
       req._validationErrors = (req._validationErrors || []).concat(errors);
       next();
@@ -95,6 +98,11 @@ module.exports = (fields, locations, message) => {
     return middleware;
   };
 
+  middleware.blocking = () => {
+    middleware._context.blocking = true;
+    return middleware;
+  };
+
   middleware._context = {
     get optional() {
       return optional;
@@ -104,7 +112,8 @@ module.exports = (fields, locations, message) => {
     fields,
     locations,
     sanitizers,
-    validators
+    validators,
+    blocking: false
   };
 
   return middleware;
