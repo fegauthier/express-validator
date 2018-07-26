@@ -11,9 +11,14 @@ module.exports = (fields, locations, message) => {
 
   const middleware = (req, res, next) => {
     return runner(req, middleware._context).then(errors => {
-      if(req._validationErrors && req._validationErrors.length > 0 && req._validationContexts && req._validationContexts.length > 0 && req._validationContexts[req._validationContexts.length - 1].blocking){
-        return next();
-      }
+      if(req._validationErrors && 
+        req._validationErrors.length > 0 && 
+        req._validationContexts && 
+        req._validationContexts.length > 0 && 
+        req._validationErrors[0].param === req._validationContexts[req._validationContexts.length - 1] && 
+        req._validationContexts[req._validationContexts.length - 1].blocking){
+       return next();
+     }
       req._validationContexts = (req._validationContexts || []).concat(middleware._context);
       req._validationErrors = (req._validationErrors || []).concat(errors);
       next();
