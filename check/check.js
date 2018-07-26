@@ -15,7 +15,7 @@ module.exports = (fields, locations, message) => {
         req._validationErrors.length > 0 && 
         req._validationContexts && 
         req._validationContexts.length > 0 && 
-        req._validationErrors[0].param === req._validationContexts[req._validationContexts.length - 1] && 
+        req._validationErrors[0].param === req._validationContexts[req._validationContexts.length - 1].fields[0] && 
         req._validationContexts[req._validationContexts.length - 1].blocking){
        return next();
      }
